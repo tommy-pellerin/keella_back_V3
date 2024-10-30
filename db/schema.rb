@@ -10,9 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_26_164733) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_30_182905) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "availabilities", force: :cascade do |t|
+    t.bigint "workout_id"
+    t.datetime "start_date", null: false
+    t.time "start_time", null: false
+    t.time "end_date", null: false
+    t.integer "duration", null: false
+    t.boolean "is_booked"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workout_id"], name: "index_availabilities_on_workout_id"
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "jwt_denylist", force: :cascade do |t|
     t.string "jti", null: false
@@ -20,6 +38,18 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_26_164733) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_jwt_denylist_on_jti"
+  end
+
+  create_table "reservations", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "workout_id", null: false
+    t.integer "quantity"
+    t.float "total"
+    t.integer "status", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_reservations_on_user_id"
+    t.index ["workout_id"], name: "index_reservations_on_workout_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -38,4 +68,27 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_26_164733) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  create_table "workouts", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.text "equipments"
+    t.string "city"
+    t.string "zip_code"
+    t.decimal "price_per_hour"
+    t.integer "max_participants"
+    t.bigint "host_id"
+    t.bigint "category_id"
+    t.boolean "is_indoor"
+    t.boolean "host_present"
+    t.string "status", default: "0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_workouts_on_category_id"
+    t.index ["host_id"], name: "index_workouts_on_host_id"
+  end
+
+  add_foreign_key "reservations", "users"
+  add_foreign_key "reservations", "workouts"
+  add_foreign_key "workouts", "users", column: "host_id"
 end

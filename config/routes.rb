@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  resources :reservations
+  resources :categories
+  resources :availabilities
+  resources :workouts
   devise_for :users,
             controllers: {
               sessions: "users/sessions",
