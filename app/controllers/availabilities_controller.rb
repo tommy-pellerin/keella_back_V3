@@ -36,6 +36,7 @@ class AvailabilitiesController < ApplicationController
   # DELETE /availabilities/1
   def destroy
     @availability.destroy!
+    render json: { message: "Availability deleted successfully." }, status: :ok
   end
 
   private
@@ -46,6 +47,6 @@ class AvailabilitiesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def availability_params
-      params.fetch(:availability, {})
+      params.require(:availability).permit(:workout_id, :start_date, :start_time, :end_date, :duration, :is_booked)
     end
 end
