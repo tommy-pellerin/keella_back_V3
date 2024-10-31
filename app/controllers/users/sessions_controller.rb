@@ -1,4 +1,11 @@
 class Users::SessionsController < Devise::SessionsController
+  # Logs de Débogage
+  def create
+    super do |resource|
+      Rails.logger.info("User signed in: #{resource.email}, ID: #{resource.id}")
+    end
+  end
+
   def destroy
     Rails.logger.debug "Attempting to log out user..."
     if user_signed_in?
