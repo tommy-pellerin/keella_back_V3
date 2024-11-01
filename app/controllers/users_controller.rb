@@ -16,6 +16,18 @@ class UsersController < ApplicationController
     }
   end
 
+  # PATCH/PUT /users/:id
+  # def update
+  #   user_params = params.require(:user).permit(:name, :other_field) # autres champs autorisés
+
+  #   # Tente la mise à jour des informations
+  #   if current_user.update(user_params)
+  #     render json: { message: 'Informations utilisateur mises à jour avec succès' }, status: :ok
+  #   else
+  #     render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
+  #   end
+  # end
+
   # DELETE /users/:id
   def destroy
     user = get_user_from_token

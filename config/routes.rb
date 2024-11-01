@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   }
   devise_scope :user do
     delete "sign_out", to: "users/sessions#destroy"
+    patch "users/update_email", to: "users/registrations#update_email"
   end
   resources :users, only: [ :show, :index, :destroy ]
   resources :reservations

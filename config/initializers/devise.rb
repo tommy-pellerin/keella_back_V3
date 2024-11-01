@@ -316,5 +316,8 @@ Devise.setup do |config|
 
   config.jwt do |jwt|
     jwt.secret = Rails.application.credentials.devise[:jwt_secret_key]
+
+    # Définir le temps d'expiration en secondes (par exemple, 2 heures)
+    jwt.expiration_time = 1.hours.to_i
   end
 end

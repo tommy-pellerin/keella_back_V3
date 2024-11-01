@@ -1,4 +1,9 @@
 class User < ApplicationRecord
+  # Callback après confirmation d'email
+  def after_confirmation
+    UserMailer.email_update_confirmation(self).deliver_later
+  end
+
   # Quand il est host
   has_many :hosted_workouts, foreign_key: "host_id", class_name: "Workout", dependent: :destroy
   # Quand il est participant
