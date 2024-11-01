@@ -13,3 +13,5 @@ En somme, votre application offre une solution pratique et économique pour les 
 ## To do list:
 - manage user account with admin account:
   => Verify when signin with severals account that there is no problem with DEVISE current_user and user from token
+- Verify authenticate_user!
+- translate DEVISE
