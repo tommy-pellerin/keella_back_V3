@@ -2,7 +2,15 @@ class Users::SessionsController < Devise::SessionsController
   # Logs de Débogage
   def create
     super do |resource|
-      Rails.logger.info("User signed in: #{resource.email}, ID: #{resource.id}")
+      if resource.errors.any?
+        # S'il y a des erreurs d'authentification
+        Rails.logger.debug "Login failed for email: #{params[:user][:email]}"
+        render json: { error: "email ou mot de passe invalide" }, status: :unauthorized and return
+      else
+        # Si la connexion est réussie
+        Rails.logger.info("User signed in: #{resource.email}, ID: #{resource.id}")
+        respond_with resource and return
+      end
     end
   end
 
