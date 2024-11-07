@@ -6,6 +6,9 @@ class CreateReservations < ActiveRecord::Migration[7.2]
       t.integer :quantity
       t.float :total
       t.integer :status, default: 0
+      t.integer :cancellation_reason
+      t.datetime :status_changed_at
+      t.datetime :relaunched_at
 
       t.timestamps
     end

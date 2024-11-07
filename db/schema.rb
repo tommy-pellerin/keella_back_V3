@@ -20,7 +20,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_30_182905) do
     t.time "start_time", null: false
     t.time "end_date", null: false
     t.integer "duration", null: false
-    t.boolean "is_booked"
+    t.boolean "is_booked", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["workout_id"], name: "index_availabilities_on_workout_id"
@@ -46,6 +46,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_30_182905) do
     t.integer "quantity"
     t.float "total"
     t.integer "status", default: 0
+    t.integer "cancellation_reason"
+    t.datetime "status_changed_at"
+    t.datetime "relaunched_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_reservations_on_user_id"
@@ -76,12 +79,12 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_30_182905) do
     t.string "address"
     t.string "city"
     t.string "zip_code"
-    t.decimal "price_per_session"
+    t.decimal "price_per_session", default: "0.0"
     t.integer "max_participants"
     t.bigint "host_id"
     t.bigint "category_id"
-    t.boolean "is_indoor"
-    t.boolean "host_present"
+    t.boolean "is_indoor", default: true
+    t.boolean "host_present", default: true
     t.string "status", default: "0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -1,4 +1,13 @@
 class User < ApplicationRecord
+  before_destroy :detach_workouts
+
+  private
+
+  def detach_workouts
+    self.workouts.update_all(host: nil)  # Ou assignez une valeur par défaut ou un autre hôte.
+    ## gestion des annulations des réservations à faire
+  end
+
   # Callback après confirmation d'email
   def after_confirmation
     UserMailer.email_update_confirmation(self).deliver_later

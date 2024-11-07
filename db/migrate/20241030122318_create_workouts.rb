@@ -7,12 +7,12 @@ class CreateWorkouts < ActiveRecord::Migration[7.2]
       t.string :address
       t.string :city
       t.string :zip_code
-      t.decimal :price_per_session
+      t.decimal :price_per_session, default: 0.0
       t.integer :max_participants
       t.references :host, foreign_key: { to_table: :users }, index: true
       t.belongs_to :category, index: true
-      t.boolean :is_indoor
-      t.boolean :host_present
+      t.boolean :is_indoor, default: true
+      t.boolean :host_present, default: true
       t.string :status, default: 0
 
       t.timestamps
