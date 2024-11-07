@@ -9,7 +9,6 @@ class Reservation < ApplicationRecord
   validates :quantity, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :total, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :status, presence: true
-  validates :cancellation_reason, inclusion: { in: cancellation_reasons.keys }, allow_nil: true
 
   # Callbacks
   before_create :set_total_price

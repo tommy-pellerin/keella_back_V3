@@ -38,8 +38,7 @@ class Workout < ApplicationRecord
   validates :host_present, inclusion: { in: [ true, false ] }
 
   # Validation pour le statut : doit être un statut valide
-  validates :status, inclusion: { in: [ "pending", "active", "completed" ],
-                                  message: "%{value} n'est pas un statut valide" }
+  validates :status, presence: true
 
   # Validation des associations
   validates_associated :category, :host

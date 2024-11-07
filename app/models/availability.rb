@@ -9,7 +9,7 @@ class Availability < ApplicationRecord
   validates :duration, presence: true, numericality: { greater_than: 30 }  # La durée doit être supérieur à 30 minute
 
   # Validation pour l'heure de fin
-  validate :end_time_after_start_time
+  validate :end_date_after_start_time
 
   # Validation pour l'heure de début par rapport à la date de début
   validate :start_time_before_start_date
@@ -23,7 +23,7 @@ class Availability < ApplicationRecord
   private
 
   # Validation pour vérifier que l'heure de fin est après l'heure de début
-  def end_time_after_start_time
+  def end_date_after_start_time
     if start_time && end_date && start_time >= end_date
       errors.add(:end_date, "doit être après l'heure de début")
     end

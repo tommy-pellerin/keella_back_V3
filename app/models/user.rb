@@ -1,18 +1,6 @@
 class User < ApplicationRecord
   before_destroy :detach_workouts
 
-  private
-
-  def detach_workouts
-    self.workouts.update_all(host: nil)  # Ou assignez une valeur par défaut ou un autre hôte.
-    ## gestion des annulations des réservations à faire
-  end
-
-  # Callback après confirmation d'email
-  def after_confirmation
-    UserMailer.email_update_confirmation(self).deliver_later
-  end
-
   # Quand il est host
   has_many :hosted_workouts, foreign_key: "host_id", class_name: "Workout", dependent: :destroy
   # Quand il est participant
@@ -24,4 +12,20 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
         :recoverable, :rememberable, :validatable, :confirmable, :jwt_authenticatable,
         jwt_revocation_strategy: JwtDenylist
+
+  private
+
+  def detach_workouts
+    self.hosted_workouts.update_all(host_id: nil)  # Ou assignez une valeur par défaut ou un autre hôte.
+
+    # Annuler toutes les réservations où l'utilisateur est un hôte
+    self.reservations.each do |reservation|
+      reservation.update(status: :host_cancelled)
+    end
+  end
+
+  # Callback après confirmation d'email
+  def after_confirmation
+    UserMailer.email_update_confirmation(self).deliver_later
+  end
 end
