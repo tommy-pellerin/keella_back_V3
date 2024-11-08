@@ -8,6 +8,9 @@ Bundler.require(*Rails.groups)
 
 module KeellaBack
   class Application < Rails::Application
+    # Ajoute cette ligne pour configurer to_time de manière à préserver le fuseau horaire complet
+    config.active_support.to_time_preserves_timezone = :zone
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.2
 

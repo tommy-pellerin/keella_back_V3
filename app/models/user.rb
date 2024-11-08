@@ -24,8 +24,12 @@ class User < ApplicationRecord
     end
   end
 
+  def welcome_send
+    UserMailer.welcome_email(self).deliver_now
+  end
+
   # Callback après confirmation d'email
   def after_confirmation
-    UserMailer.email_update_confirmation(self).deliver_later
+    welcome_send
   end
 end
