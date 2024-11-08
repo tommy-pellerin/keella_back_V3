@@ -3,5 +3,5 @@ class Category < ApplicationRecord
   has_many :workouts
 
   # Validations
-  validates :title, presence: true
+  validates :title, presence: true, uniqueness: true
 end
