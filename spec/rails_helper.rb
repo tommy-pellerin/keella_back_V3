@@ -67,6 +67,15 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.include FactoryBot::Syntax::Methods
+
+  # Charger tous les fichiers dans spec/support
+  Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+
+  # Inclure RequestHelpers dans les tests de type :request
+  config.include RequestHelpers, type: :request
+
+  # Si tu utilises Devise pour l'authentification des utilisateurs, tu devras inclure des helpers Devise pour les tests d'authentification
+  config.include Devise::Test::IntegrationHelpers, type: :request
 end
 
 Shoulda::Matchers.configure do |config|

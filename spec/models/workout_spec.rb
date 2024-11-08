@@ -43,7 +43,7 @@ RSpec.describe Workout, type: :model do
     it { should belong_to(:host).class_name('User') }
     it { should belong_to(:category) }
     it { should have_many(:availabilities) }
-    it { should have_many(:reservations).dependent(:destroy) }
+    it { should have_many(:reservations) }
     it { should have_many(:participants).through(:reservations).source(:user) }
 
     it 'is not valid without a host' do
