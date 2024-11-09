@@ -56,23 +56,6 @@ RSpec.describe User, type: :model do
         expect(UserMailer).to have_received(:welcome_email).with(unconfirmed_user)
       end
     end
-
-    #   describe 'before_destroy callback' do
-    #     let!(:user) { create(:user) }
-    #     let!(:workout) { create(:workout, host: user) }
-    #     let!(:reservation) { create(:reservation, workout: workout, user: user) }
-
-    #     it 'detaches hosted workouts before destruction' do
-    #       user.destroy
-    #       expect(workout.reload.host_id).to be_nil # vérifie que host_id a été mis à nil
-    #     end
-
-    #     it 'cancels reservations where user is the host' do
-    #       # Assure-toi que la réservation est mise à jour avec le bon statut
-    #       user.destroy
-    #       expect(reservation.reload.status).to eq("host_cancelled")
-    #     end
-    #   end
   end
 
   # Tests de méthodes

@@ -2,8 +2,7 @@ FactoryBot.define do
   factory :reservation do
     association :user
     association :workout
-    quantity { rand(0..5) }
-    total { rand(0..100) }
+    quantity { rand(1..5) }
     status { :pending }
   end
 end

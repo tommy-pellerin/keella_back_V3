@@ -1,6 +1,6 @@
 class Availability < ApplicationRecord
   # Relations
-  belongs_to :workout, dependent: :destroy
+  belongs_to :workout
 
   # Validation pour la présence de la date de début et de l'heure de début
   validates :start_date, presence: true

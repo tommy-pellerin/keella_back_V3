@@ -1,4 +1,3 @@
-# spec/requests/workouts_spec.rb
 require 'rails_helper'
 
 RSpec.describe "Workouts", type: :request do
