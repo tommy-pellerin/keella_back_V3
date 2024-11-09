@@ -2,8 +2,8 @@ class Workout < ApplicationRecord
   # Relations
   belongs_to :host, class_name: "User"
   belongs_to :category
-  has_many :availabilities
-  has_many :reservations, dependent: :destroy
+  has_many :availabilities, dependent: :destroy
+  has_many :reservations
   has_many :participants, through: :reservations, source: :user
 
   # Validations
@@ -42,4 +42,16 @@ class Workout < ApplicationRecord
 
   # Validation des associations
   validates_associated :category, :host
+
+  # Callback pour empêcher la suppression si des réservations sont présentes
+  before_destroy :check_for_reservations
+
+  private
+
+  def check_for_reservations
+    if reservations.any?
+      errors.add(:base, "Cannot delete workout with active reservations")
+      throw(:abort)  # Empêche la suppression
+    end
+  end
 end

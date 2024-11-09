@@ -35,8 +35,11 @@ class AvailabilitiesController < ApplicationController
 
   # DELETE /availabilities/1
   def destroy
-    @availability.destroy!
-    render json: { message: "Availability deleted successfully." }, status: :ok
+    if @availability.destroy
+      render json: { message: "Availability deleted successfully." }, status: :ok
+    else
+      render json: { error: "Failed to delete availability" }, status: :unprocessable_entity
+    end
   end
 
   private

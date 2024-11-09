@@ -38,6 +38,15 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Rspec-rails [https://rspec.info/features/6-0/rspec-rails/]
+  gem "rspec-rails", "~> 7.0"
+
+  # Factory bot rails : Crée des instances avec des valeurs par défaut pour simplifier la configuration des tests.
+  gem "factory_bot_rails"
+
+  # Shoulda Matchers provides RSpec- and Minitest-compatible one-liners to test common Rails functionality [https://github.com/thoughtbot/shoulda-matchers].
+  gem "shoulda-matchers", "~> 6.4"
 end
 
 gem "dotenv"
