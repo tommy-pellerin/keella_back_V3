@@ -1,8 +1,9 @@
 class User < ApplicationRecord
+  # belongs_to :city
   # Quand il est host
   has_many :hosted_workouts, foreign_key: "host_id", class_name: "Workout"
   # Quand il est participant
-  has_many :reservations
+  has_many :reservations, foreign_key: "participant_id"
   has_many :booked_workouts, through: :reservations, source: :workout
 
   # Include default devise modules. Others available are:

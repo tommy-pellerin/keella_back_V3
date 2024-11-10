@@ -1,10 +1,10 @@
 FactoryBot.define do
   factory :availability do
-    start_date { Date.today }
+    date { Date.today }
     start_time { Time.now }
-    end_date { Time.now + 1.hour }
-    duration { 60 } # durée en minutes
+    end_time { Time.now + 1.hour }
+    max_participants { rand(1..50) }
     is_booked { false }
-    association :workout
+    workout { association(:workout) }
   end
 end

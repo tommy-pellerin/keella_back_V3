@@ -5,12 +5,16 @@ class Reservation < ApplicationRecord
   after_update :update_status_changed_at, if: :saved_change_to_status?
 
   # Relations
-  belongs_to :user
-  belongs_to :workout
+  # Une réservation appartient à un participant (user)
+  belongs_to :participant, class_name: "User"
+  # Une réservation appartient à un créneau (availability)
+  belongs_to :availability
+  # L'accès au workout via la réservation
+  has_one :workout, through: :availability
 
   # Validations
-  validates :user, presence: true
-  validates :workout, presence: true
+  validates :participant, presence: true
+  validates :availability, presence: true
   validates :quantity, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :status, presence: true
 

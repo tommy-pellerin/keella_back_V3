@@ -1,10 +1,12 @@
 class Workout < ApplicationRecord
   # Relations
+  belongs_to :city
   belongs_to :host, class_name: "User"
   belongs_to :category
-  has_many :availabilities, dependent: :destroy
-  has_many :reservations
-  has_many :participants, through: :reservations, source: :user
+  has_many :availabilities
+  # Un workout peut avoir plusieurs participants via les réservations
+  has_many :reservations, through: :availabilities
+  has_many :participants, through: :reservations, source: :participant
 
   # Validations
   # Validation pour le titre : doit être présent et unique
@@ -16,11 +18,11 @@ class Workout < ApplicationRecord
   # Validation pour les équipements : peut être vide
   validates :equipments, length: { maximum: 1000 }, allow_blank: true
 
-  # Validation pour l'adresse, la ville et le code postal
+  # Validation pour l'adresse, la ville
   validates :address, presence: true
   validates :city, presence: true
-  validates :zip_code, presence: true, format: { with: /\A\d{5}\z/, message: "doit être un code postal valide" }
-
+  # Validation pour la durée par session : doit être un nombre supérieur à 30 minutes,
+  validates :duration_per_session, numericality: { greater_than: 30 }
   # Validation pour le prix par session : doit être un nombre, et peut être 0 (gratuit)
   validates :price_per_session, numericality: { greater_than_or_equal_to: 0 }
 
@@ -38,7 +40,7 @@ class Workout < ApplicationRecord
   validates :host_present, inclusion: { in: [ true, false ] }
 
   # Validation pour le statut : doit être un statut valide
-  validates :status, presence: true
+  # validates :status, presence: true, inclusion: { in: [ "0", "1", "2", "3", "4" ] }
 
   # Validation des associations
   validates_associated :category, :host
@@ -54,4 +56,6 @@ class Workout < ApplicationRecord
       throw(:abort)  # Empêche la suppression
     end
   end
+
+  enum :status, [ :pending, :validated, :published, :suspended, :closed ]
 end

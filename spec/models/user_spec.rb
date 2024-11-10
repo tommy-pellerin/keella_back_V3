@@ -36,8 +36,8 @@ RSpec.describe User, type: :model do
     end
     context 'when user is participant' do
       it { should have_many(:booked_workouts) }
+      it { should have_many(:reservations) }
     end
-    it { should have_many(:reservations) }
   end
 
   # Tests des callbacks

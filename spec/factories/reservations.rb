@@ -1,8 +1,7 @@
 FactoryBot.define do
   factory :reservation do
-    association :user
-    association :workout
+    participant { association(:participant) }
+    availability { association(:availability) }
     quantity { rand(1..5) }
-    status { :pending }
   end
 end
