@@ -4,6 +4,7 @@ class User < ApplicationRecord
   has_many :hosted_workouts, foreign_key: "host_id", class_name: "Workout"
   # Quand il est participant
   has_many :reservations, foreign_key: "participant_id"
+  # Un participant peut avoir plusieurs workouts via les réservations
   has_many :booked_workouts, through: :reservations, source: :workout
 
   # Include default devise modules. Others available are:

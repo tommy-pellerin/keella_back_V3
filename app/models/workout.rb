@@ -1,16 +1,18 @@
 class Workout < ApplicationRecord
   # Relations
   belongs_to :city
-  belongs_to :host, class_name: "User"
   belongs_to :category
+  belongs_to :host, class_name: "User"
   has_many :availabilities
-  # Un workout peut avoir plusieurs participants via les réservations
+  # On connecte workout à user (participant) en passant par availability puis reservation
+  # Un workout peut avoir plusieurs réservations via les disponibilités,
   has_many :reservations, through: :availabilities
+  # Un workout peut avoir plusieurs participants via les réservations
   has_many :participants, through: :reservations, source: :participant
 
   # Validations
   # Validation pour le titre : doit être présent et unique
-  validates :title, presence: true, uniqueness: true, length: { minimum: 5, maximum: 50 }
+  validates :title, presence: true, uniqueness: true, length: { minimum: 5, maximum: 100 }
 
   # Validation pour la description : doit être présente mais peut être vide
   validates :description, length: { minimum: 10, maximum: 1000 }, allow_blank: true
@@ -21,8 +23,8 @@ class Workout < ApplicationRecord
   # Validation pour l'adresse, la ville
   validates :address, presence: true
   validates :city, presence: true
-  # Validation pour la durée par session : doit être un nombre supérieur à 30 minutes,
-  validates :duration_per_session, numericality: { greater_than: 30 }
+  # Validation pour la durée par session : doit être un nombre supérieur ou égale à 30 minutes,
+  validates :duration_per_session, numericality: { greater_than_or_equal_to: 30 }
   # Validation pour le prix par session : doit être un nombre, et peut être 0 (gratuit)
   validates :price_per_session, numericality: { greater_than_or_equal_to: 0 }
 

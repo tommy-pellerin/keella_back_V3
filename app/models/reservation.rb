@@ -6,10 +6,10 @@ class Reservation < ApplicationRecord
 
   # Relations
   # Une réservation appartient à un participant (user)
-  belongs_to :participant, class_name: "User"
+  belongs_to :participant, class_name: "User", foreign_key: "participant_id"
   # Une réservation appartient à un créneau (availability)
   belongs_to :availability
-  # L'accès au workout via la réservation
+  # L'accès au workout via la réservation en passant par la disponibilité
   has_one :workout, through: :availability
 
   # Validations

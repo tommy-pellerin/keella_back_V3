@@ -22,7 +22,7 @@ RSpec.describe Workout, type: :model do
     # it { should allow_value('75001').for(:zip_code) } # Validation du format du code postal
     # it { should_not allow_value('abcde').for(:zip_code) }  # Test d'un code postal invalide
     it { should validate_numericality_of(:price_per_session).is_greater_than_or_equal_to(0) }  # Le prix doit être >= 0
-    it { should validate_numericality_of(:duration_per_session).is_greater_than(30) }  # La durée doit être > 30 minutes
+    it { should validate_numericality_of(:duration_per_session).is_greater_than_or_equal_to(30) }  # La durée doit être >= 30 minutes
     it { should validate_presence_of(:max_participants) }  # Le nombre max de participants doit être présent
     it { should validate_numericality_of(:max_participants).is_greater_than(0) }  # Le nombre max de participants doit être > 0
   end
