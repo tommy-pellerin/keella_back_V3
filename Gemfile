@@ -40,7 +40,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Rspec-rails [https://rspec.info/features/6-0/rspec-rails/]
-  gem "rspec-rails", "~> 7.0"
+  gem "rspec-rails", "~> 7.1"
 
   # Factory bot rails : Crée des instances avec des valeurs par défaut pour simplifier la configuration des tests.
   gem "factory_bot_rails"
