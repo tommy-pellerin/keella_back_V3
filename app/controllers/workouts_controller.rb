@@ -1,5 +1,6 @@
 class WorkoutsController < ApplicationController
   before_action :set_workout, only: %i[ show update destroy ]
+  before_action :authenticate_user!, except: %i[ index show ]
 
   # GET /workouts
   def index
@@ -57,7 +58,7 @@ class WorkoutsController < ApplicationController
       :description,         # La description du workout
       :equipments,          # Les équipements nécessaires
       :address,             # L'adresse du workout
-      :city,                # La ville où se déroule le workout
+      :city_id,                # La ville où se déroule le workout
       :zip_code,            # Le code postal
       :price_per_session,   # Le prix par session
       :max_participants,    # Le nombre maximal de participants

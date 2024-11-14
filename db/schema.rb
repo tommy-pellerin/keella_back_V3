@@ -10,16 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_30_182905) do
+ActiveRecord::Schema[8.0].define(version: 2024_11_10_110055) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "availabilities", force: :cascade do |t|
     t.bigint "workout_id"
-    t.datetime "start_date", null: false
+    t.datetime "date", null: false
     t.time "start_time", null: false
-    t.time "end_date", null: false
-    t.integer "duration", null: false
+    t.time "end_time", null: false
+    t.integer "max_participants"
     t.boolean "is_booked", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -28,6 +28,13 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_30_182905) do
 
   create_table "categories", force: :cascade do |t|
     t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "cities", force: :cascade do |t|
+    t.string "name"
+    t.string "zip_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -41,8 +48,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_30_182905) do
   end
 
   create_table "reservations", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "workout_id", null: false
+    t.bigint "participant_id", null: false
+    t.bigint "availability_id", null: false
     t.integer "quantity"
     t.float "total"
     t.integer "status", default: 0
@@ -51,8 +58,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_30_182905) do
     t.datetime "relaunched_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_reservations_on_user_id"
-    t.index ["workout_id"], name: "index_reservations_on_workout_id"
+    t.index ["availability_id"], name: "index_reservations_on_availability_id"
+    t.index ["participant_id"], name: "index_reservations_on_participant_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -77,10 +84,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_30_182905) do
     t.text "description"
     t.text "equipments"
     t.string "address"
-    t.string "city"
-    t.string "zip_code"
-    t.decimal "price_per_session", default: "0.0"
+    t.bigint "city_id"
     t.integer "max_participants"
+    t.integer "duration_per_session", default: 60
+    t.decimal "price_per_session", default: "0.0"
     t.bigint "host_id"
     t.bigint "category_id"
     t.boolean "is_indoor", default: true
@@ -89,10 +96,11 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_30_182905) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_workouts_on_category_id"
+    t.index ["city_id"], name: "index_workouts_on_city_id"
     t.index ["host_id"], name: "index_workouts_on_host_id"
   end
 
-  add_foreign_key "reservations", "users"
-  add_foreign_key "reservations", "workouts"
+  add_foreign_key "reservations", "availabilities"
+  add_foreign_key "reservations", "users", column: "participant_id"
   add_foreign_key "workouts", "users", column: "host_id"
 end

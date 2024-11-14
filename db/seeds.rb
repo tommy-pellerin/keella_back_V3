@@ -14,6 +14,7 @@ Faker::Config.locale = 'fr'
 
 # Supprimer toutes les données existantes
 def reset_db
+  City.destroy_all
   Category.destroy_all
   Reservation.destroy_all
   Availability.destroy_all
@@ -28,9 +29,34 @@ def reset_db
     # ActiveRecord::Base.connection.execute("DELETE from sqlite_sequence where name = '#{t}'")
   end
 
-  puts('>>> drop and reset all tables <<<')
+  puts('>>> drop and reset all tables data<<<')
 end
 reset_db
+
+# Méthode pour créer les villes
+def create_cities
+  created_count = 0
+
+  while created_count < 50  # Continue tant qu'on n'a pas créé 50 villes uniques
+    name = Faker::Address.city
+    zip_code = Faker::Address.zip_code
+
+    # Vérifie si la combinaison nom et code postal est unique avant de créer
+    city = City.find_or_initialize_by(name: name, zip_code: zip_code)
+
+    if city.new_record?  # S'assure qu'on crée une ville qui n'existe pas déjà
+      if city.save
+        created_count += 1
+        # puts "Ville créée : #{city.name} - #{city.zip_code}"
+      # else
+      #   puts "Erreur lors de la création de la ville '#{city.name}': #{city.errors.full_messages.join(", ")}"
+      end
+    end
+  end
+
+  puts ">>> #{created_count} villes uniques créées avec succès <<<" if created_count > 0
+end
+create_cities
 
 # Méthode pour créer les catégories
 def create_categories
@@ -112,8 +138,7 @@ create_users
 
 # Méthode pour générer un workout valide
 def generate_workout
-  city = Faker::Address.city
-  zip_code = Faker::Address.zip_code
+  city = City.all.sample
 
   # Sélection d'une catégorie aléatoire
   category = Category.all.sample
@@ -136,8 +161,8 @@ def generate_workout
     equipments: equipments,
     address: address,
     city: city,
-    zip_code: zip_code,
     price_per_session: rand(10..50),
+    duration_per_session: rand(30..120),
     max_participants: rand(1..15),
     host: host,
     category: category,
@@ -160,19 +185,18 @@ def create_availabilities_for_workout(workout)
 
   # Premier créneau : tous les jours à 12h pendant 1 semaine
   start_time_1 = Time.now.change(hour: 12, min: 0)
-  duration_1 = 60.minutes # 1h
   recurrence_days_1 = 7   # 1 semaine
 
   recurrence_days_1.times do |day_offset|
-    start_date = start_time_1 + day_offset.days
-    end_date = start_date + duration_1
+    date = start_time_1 + day_offset.days
+    end_time= date + 120
 
     availabilities << {
       workout_id: workout.id,
-      start_date: start_date.to_date,
-      start_time: start_date,
-      end_date: end_date,
-      duration: duration_1 / 60, # Convertir en minutes
+      date: date.to_date,
+      start_time: date,
+      end_time: end_time,
+      max_participants: rand(1..20),
       is_booked: false
     }
   end
@@ -184,14 +208,14 @@ def create_availabilities_for_workout(workout)
 
   recurrence_days_2.times do |day_offset|
     start_date = start_time_2 + day_offset.days
-    end_date = start_date + duration_2
+    end_time = start_date + duration_2
 
     availabilities << {
       workout_id: workout.id,
-      start_date: start_date.to_date,
+      date: start_date.to_date,
       start_time: start_date,
-      end_date: end_date,
-      duration: duration_2 / 60, # Convertir en minutes
+      end_time: end_time,
+      max_participants: rand(1..15),
       is_booked: false
     }
   end
@@ -199,7 +223,7 @@ def create_availabilities_for_workout(workout)
   # Création de toutes les disponibilités en une seule transaction
   Availability.create!(availabilities) unless availabilities.empty?
 
-  puts "Créneaux de disponibilité créés pour le workout #{workout.title} : #{availabilities.count} créneaux"
+  # puts "Créneaux de disponibilité créés pour le workout #{workout.title} : #{availabilities.count} créneaux"
 end
 
 # Méthode principale pour créer des workouts avec créneaux
@@ -231,15 +255,17 @@ def create_reservations
     user = User.all.sample
     quantity = rand(1..2)
     workout = Workout.all.sample
-
+    availability = workout.availabilities.sample
+    
     # S'assurer que l'utilisateur n'est pas l'hôte de la séance
     while user == workout.host
       workout = Workout.all.sample
+      availability = workout.availabilities.sample
     end
 
     reservation = Reservation.new(
-      user: user,
-      workout: workout,
+      participant: user,
+      availability: availability,
       quantity: quantity,
       total: workout.price_per_session * quantity
     )

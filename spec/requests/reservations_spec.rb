@@ -2,21 +2,21 @@ require 'rails_helper'
 
 RSpec.describe "Reservations", type: :request do
   let(:user) { create(:user) }
-  let(:workout) { create(:workout) }
+  let(:availability) { create(:availability) }
   before do
     sign_in user
   end
   # Paramètres valides pour les tests de création et de mise à jour
   let(:valid_attributes) do
     {
-      workout_id: workout.id,
+      availability_id: availability.id,
       quantity: 2
     }
   end
 
   let(:invalid_attributes) do
     {
-      workout_id: workout.id,
+      availability_id: availability.id,
       quantity: 0
     }
   end
@@ -35,9 +35,9 @@ RSpec.describe "Reservations", type: :request do
   end
 
   describe "GET /reservations/:id" do
-    let(:user) { create(:user) }
-    let(:workout) { create(:workout) }
-    let(:reservation) { create(:reservation, user: user, workout: workout) }
+    let(:user) { create(:participant) }
+    let(:availability) { create(:availability) }
+    let(:reservation) { create(:reservation, participant: user, availability: availability) }
 
     before do
       sign_in user
@@ -48,7 +48,7 @@ RSpec.describe "Reservations", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(json_response['id']).to eq(reservation.id)
-      expect(json_response['user_id']).to eq(user.id)
+      expect(json_response['participant_id']).to eq(user.id)
     end
 
     it "returns a 404 error when the reservation is not found" do
@@ -84,7 +84,7 @@ RSpec.describe "Reservations", type: :request do
         }.to change(Reservation, :count).by(1)
 
         expect(response).to have_http_status(:created)
-        expect(json_response['workout_id']).to eq(workout.id)
+        expect(json_response['availability_id']).to eq(availability.id)
       end
 
       # it "does not create a reservation for a full workout" do

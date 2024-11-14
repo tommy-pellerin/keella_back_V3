@@ -5,8 +5,8 @@ RSpec.describe Reservation, type: :model do
 
   # Validations
   describe 'validations' do
-    it { should validate_presence_of(:user) }
-    it { should validate_presence_of(:workout) }
+    it { should validate_presence_of(:participant) }
+    it { should validate_presence_of(:availability) }
     it { should validate_presence_of(:quantity) }
     it { should validate_numericality_of(:quantity).only_integer.is_greater_than(0) }
     it { should validate_presence_of(:status) }
@@ -14,8 +14,8 @@ RSpec.describe Reservation, type: :model do
 
   # Associations
   describe 'associations' do
-    it { should belong_to(:user) }
-    it { should belong_to(:workout) }
+    it { should belong_to(:participant) }
+    it { should belong_to(:availability) }
   end
 
   describe 'enum attributes' do

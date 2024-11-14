@@ -1,5 +1,6 @@
 class AvailabilitiesController < ApplicationController
   before_action :set_availability, only: %i[ show update destroy ]
+  before_action :authenticate_user!
 
   # GET /availabilities
   def index
@@ -50,6 +51,6 @@ class AvailabilitiesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def availability_params
-      params.require(:availability).permit(:workout_id, :start_date, :start_time, :end_date, :duration, :is_booked)
+      params.require(:availability).permit(:workout_id, :date, :start_time, :end_time, :max_participants, :is_booked)
     end
 end

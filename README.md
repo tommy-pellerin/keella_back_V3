@@ -16,3 +16,4 @@ En somme, votre application offre une solution pratique et économique pour les 
 - Verify authenticate_user!
 - translate DEVISE
 - Implémentation d'un "soft delete" = quand un utilisateur est supprimé avec destroy, l'objet est simplement marqué comme supprimé (en définissant la valeur de deleted_at), mais les données restent dans la base.
+- users can suggest new category

@@ -1,5 +1,6 @@
 class ReservationsController < ApplicationController
   before_action :set_reservation, only: %i[ show update destroy ]
+  before_action :authenticate_user!
 
   # GET /reservations
   def index
@@ -46,6 +47,6 @@ class ReservationsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def reservation_params
-      params.require(:reservation).permit(:workout_id, :quantity, :status)
+      params.require(:reservation).permit(:availability_id, :quantity, :status)
     end
 end

@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "Categories", type: :request do
+  let(:user) { create(:user) }
+  before do
+    sign_in user
+  end
+
   describe "GET /categories" do
     before do
       create_list(:category, 5)  # Crée 5 catégories avec la factory
