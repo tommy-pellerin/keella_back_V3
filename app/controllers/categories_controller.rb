@@ -1,6 +1,7 @@
 class CategoriesController < ApplicationController
   before_action :set_category, only: %i[ show update destroy ]
   before_action :authenticate_user!
+  # before_action :authorize_admin!
 
   # GET /categories
   def index
@@ -44,13 +45,18 @@ class CategoriesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_category
-      @category = Category.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def category_params
-      params.require(:category).permit(:title)
-    end
+  def authorize_admin!
+    render json: { error: "Vous n'êtes pas administrateur, vous ne pouvez acceder à cette page." }, status: :unauthorized unless current_user.isAdmin?
+  end
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_category
+    @category = Category.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def category_params
+    params.require(:category).permit(:title)
+  end
 end

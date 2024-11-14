@@ -1,6 +1,7 @@
 class WorkoutsController < ApplicationController
   before_action :set_workout, only: %i[ show update destroy ]
   before_action :authenticate_user!, except: %i[ index show ]
+  before_action :authorize_user!, only: %i[update destroy]
 
   # GET /workouts
   def index
@@ -44,7 +45,11 @@ class WorkoutsController < ApplicationController
 
   private
 
-
+  def authorize_user!
+    unless @workout.host == current_user
+      render json: { error: "Vous n'êtes pas autorisé à faire cette action" }, status: :unauthorized
+    end
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_workout

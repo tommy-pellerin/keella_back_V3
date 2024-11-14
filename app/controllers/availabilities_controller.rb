@@ -1,6 +1,7 @@
 class AvailabilitiesController < ApplicationController
   before_action :set_availability, only: %i[ show update destroy ]
   before_action :authenticate_user!
+  before_action :authorize_user!, only: %i[ update destroy ]
 
   # GET /availabilities
   def index
@@ -44,13 +45,21 @@ class AvailabilitiesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_availability
-      @availability = Availability.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def availability_params
-      params.require(:availability).permit(:workout_id, :date, :start_time, :end_time, :max_participants, :is_booked)
+  def authorize_user!
+    # Seul l'hote du workout peut modifier ou supprimer
+    unless @availaibility.workout.host == current_user
+      render json: { error: "Vous n'êtes pas autorisé à effectuer cette action" }, status: :unauthorized
     end
+  end
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_availability
+    @availability = Availability.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def availability_params
+    params.require(:availability).permit(:workout_id, :date, :start_time, :end_time, :max_participants, :is_booked)
+  end
 end
