@@ -1,6 +1,6 @@
 class AvailabilitiesController < ApplicationController
   before_action :set_availability, only: %i[ show update destroy ]
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: %i[ index show ]
   before_action :authorize_user!, only: %i[ update destroy ]
 
   # GET /availabilities
@@ -48,7 +48,7 @@ class AvailabilitiesController < ApplicationController
 
   def authorize_user!
     # Seul l'hote du workout peut modifier ou supprimer
-    unless @availaibility.workout.host == current_user
+    unless @availability.workout.host == current_user
       render json: { error: "Vous n'êtes pas autorisé à effectuer cette action" }, status: :unauthorized
     end
   end
