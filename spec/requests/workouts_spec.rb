@@ -69,6 +69,9 @@ RSpec.describe "Workouts", type: :request do
   end
 
   describe "POST /workouts" do
+    before do
+      sign_in host
+    end
     context "with valid parameters" do
       it "creates a new Workout" do
         expect {
@@ -96,6 +99,10 @@ RSpec.describe "Workouts", type: :request do
       { title: "Séance avancée de Yoga" }
     end
 
+    before do
+      sign_in host
+    end
+
     it "updates a workout" do
       patch "/workouts/#{workout.id}", params: { workout: new_attributes }
 
@@ -115,6 +122,10 @@ RSpec.describe "Workouts", type: :request do
     # before do
     #   create_list(:workout, 5) # Crée 5 workouts avec la factory
     # end
+    before do
+      sign_in host
+    end
+
     let!(:workout) { create(:workout) }
     it "deletes a workout" do
       expect {

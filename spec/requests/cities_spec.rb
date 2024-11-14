@@ -16,6 +16,11 @@ RSpec.describe "/cities", type: :request do
   # This should return the minimal set of attributes required to create a valid
   # City. As you add validations to City, be sure to
   # adjust the attributes here as well.
+  let(:user) { create(:user) }
+  before do
+    sign_in user
+  end
+
   let(:valid_attributes) do
     {
     name: "Paris",

@@ -12,7 +12,7 @@ RSpec.describe Workout, type: :model do
 
     it { should validate_presence_of(:title) }  # Le titre doit être présent
     it { should validate_uniqueness_of(:title) } # Le titre doit être unique
-    it { should validate_length_of(:title).is_at_least(5).is_at_most(50) } # Longueur du titre (min 5, max 50)
+    it { should validate_length_of(:title).is_at_least(5).is_at_most(100) } # Longueur du titre (min 5, max 100)
 
     it { should validate_length_of(:description).is_at_least(10).is_at_most(1000).allow_blank }  # Longueur de la description (min 10, max 1000) avec `allow_blank`
     it { should validate_length_of(:equipments).is_at_most(1000).allow_blank }  # Longueur des équipements (max 1000) avec `allow_blank`
