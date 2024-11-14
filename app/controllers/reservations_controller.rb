@@ -28,16 +28,21 @@ class ReservationsController < ApplicationController
 
   # PATCH/PUT /reservations/1
   def update
-    if @reservation.update(reservation_params)
-      render json: @reservation
+    # Autoriser uniquement la mise à jour du statut
+    if @reservation.update(status: reservation_params[:status])
+      render json: @reservation, status: :ok
     else
-      render json: @reservation.errors, status: :unprocessable_entity
+      render json: { errors: @reservation.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   # DELETE /reservations/1
   def destroy
-    @reservation.destroy!
+    if @reservation.destroy
+      render json: { message: "Workout deleted successfully." }, status: :ok
+    else
+      render json: { error: "Failed to delete reservation" }, status: :unprocessable_entity
+    end
   end
 
   private
