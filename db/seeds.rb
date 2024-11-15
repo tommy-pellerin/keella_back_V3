@@ -14,12 +14,12 @@ Faker::Config.locale = 'fr'
 
 # Supprimer toutes les données existantes
 def reset_db
-  City.destroy_all
-  Category.destroy_all
   Reservation.destroy_all
   Availability.destroy_all
   Workout.destroy_all
   User.destroy_all
+  Category.destroy_all
+  City.destroy_all
 
   # reset table sequence
   ActiveRecord::Base.connection.tables.each do |t|
@@ -91,8 +91,20 @@ end
 create_categories
 
 # Méthode pour créer un administrateur avec gestion des erreurs
-def create_admin(email, password)
-  admin = User.new(email: email, password: password)
+def create_admin
+  admin = User.new(
+    email: 'na_ru_to619@hotmail.fr', 
+    password: 'admin123',
+    first_name: 'Admin',
+    last_name: 'User',
+    birthday: '2000-01-01',
+    phone: '0123456789',
+    city_id: City.all.sample.id,
+    id_verified: true,
+    professional: true,
+    is_admin: true,
+    status: 0
+  )
 
   if admin.save
     admin.confirmed_at = Time.now
@@ -106,17 +118,46 @@ def create_admin(email, password)
 end
 
 # Appel de la méthode de création de l'admin
-create_admin('na_ru_to619@hotmail.fr', 'admin123')
+create_admin
 
 ActionMailer::Base.perform_deliveries = false
+
+# Fonction pour générer un numéro de téléphone français valide
+def generate_french_phone_number
+  # Formats possibles pour les numéros français
+  formats = [
+    "06%02d%02d%02d%02d",       # Compact : 0601020304
+    "06 %02d %02d %02d %02d",   # Avec espaces : 06 01 02 03 04
+    "06.%02d.%02d.%02d.%02d",   # Avec points : 06.01.02.03.04
+    "06-%02d-%02d-%02d-%02d",   # Avec tirets : 06-01-02-03-04
+    "+33 6 %02d %02d %02d %02d",# International avec espaces : +33 6 01 02 03 04
+    "+33.6.%02d.%02d.%02d.%02d",# International avec points : +33.6.01.02.03.04
+    "0033 6 %02d %02d %02d %02d"# International compact : 0033 6 01 02 03 04
+  ]
+
+  # Choisir un format aléatoire
+  format = formats.sample
+
+  # Remplir les parties dynamiques avec des nombres aléatoires
+  format % Array.new(4) { rand(10..99) }
+end
 
 # Création des utilisateurs
 def create_users
   created_count = 0
   10.times do
     user = User.create(
-      email: Faker::Internet.email,
-      password: 'azerty123'
+      email: Faker::Internet.email,        # Génère un email aléatoire
+      password: 'azerty123',               # Mot de passe fixe
+      first_name: Faker::Name.first_name,  # Génère un prénom aléatoire
+      last_name: Faker::Name.last_name,    # Génère un nom de famille aléatoire
+      birthday: Faker::Date.birthday(min_age: 18, max_age: 100), # Génère une date de naissance aléatoire entre 18 et 65 ans
+      phone: generate_french_phone_number,
+      city_id: City.all.sample.id,              # Assure-toi que la ville avec l'ID 1 existe (ou remplace par une autre ville valide)
+      id_verified: [true, false].sample,   # Choisit un statut vérifié aléatoire
+      professional: [true, false].sample,  # Choisit un statut professionnel aléatoire
+      is_admin: false,                     # Assure-toi de ne pas créer d'admin pour ce seed
+      status: 0                            # Par défaut, le statut est 0
     )
     user.confirmed_at = Time.now
     user.save
@@ -197,7 +238,6 @@ def create_availabilities_for_workout(workout)
       start_time: date,
       end_time: end_time,
       max_participants: rand(1..20),
-      is_booked: false
     }
   end
 
@@ -215,8 +255,7 @@ def create_availabilities_for_workout(workout)
       date: start_date.to_date,
       start_time: start_date,
       end_time: end_time,
-      max_participants: rand(1..15),
-      is_booked: false
+      max_participants: rand(1..15)
     }
   end
 
@@ -251,7 +290,8 @@ create_workouts_with_availabilities
 # Création des réservations
 def create_reservations
   created_count = 0
-  50.times do
+  quantity_to_create = 50
+  quantity_to_create.times do
     user = User.all.sample
     quantity = rand(1..2)
     workout = Workout.all.sample
@@ -278,7 +318,7 @@ def create_reservations
   end
 
   if created_count > 0
-    puts ">>> #{created_count} reservations successfully created <<<"
+    puts ">>> #{created_count}/#{quantity_to_create} reservations successfully created <<<"
   end
 end
 

@@ -60,6 +60,6 @@ class AvailabilitiesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def availability_params
-    params.require(:availability).permit(:workout_id, :date, :start_time, :end_time, :max_participants, :is_booked)
+    params.require(:availability).permit(:workout_id, :date, :start_time, :end_time, :max_participants, :slot)
   end
 end

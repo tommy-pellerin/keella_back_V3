@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_10_110055) do
+ActiveRecord::Schema[8.0].define(version: 2024_11_15_134750) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,7 +20,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_10_110055) do
     t.time "start_time", null: false
     t.time "end_time", null: false
     t.integer "max_participants"
-    t.boolean "is_booked", default: false
+    t.integer "slot"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["workout_id"], name: "index_availabilities_on_workout_id"
@@ -74,6 +74,16 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_10_110055) do
     t.string "unconfirmed_email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.datetime "birthday"
+    t.string "phone"
+    t.bigint "city_id"
+    t.boolean "id_verified", default: false
+    t.boolean "professional", default: false
+    t.boolean "is_admin", default: false
+    t.integer "status", default: 0
+    t.index ["city_id"], name: "index_users_on_city_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -92,7 +102,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_10_110055) do
     t.bigint "category_id"
     t.boolean "is_indoor", default: true
     t.boolean "host_present", default: true
-    t.string "status", default: "0"
+    t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_workouts_on_category_id"
@@ -102,5 +112,6 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_10_110055) do
 
   add_foreign_key "reservations", "availabilities"
   add_foreign_key "reservations", "users", column: "participant_id"
+  add_foreign_key "users", "cities"
   add_foreign_key "workouts", "users", column: "host_id"
 end

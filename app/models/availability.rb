@@ -16,9 +16,6 @@ class Availability < ApplicationRecord
   # Validation pour le nombre maximal de participants : doit être supérieur à 0
   validates :max_participants, presence: true, numericality: { greater_than: 0 }
 
-  # Validation pour la réservation
-  validates :is_booked, inclusion: { in: [ true, false ] }
-
   # personalized method validations
   validate :end_time_after_start_time
 

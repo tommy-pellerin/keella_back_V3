@@ -12,8 +12,7 @@ RSpec.describe "Availabilities", type: :request do
       date: "2024-11-10",
       start_time: "10:00",
       end_time: "11:00",
-      max_participants: 5,
-      is_booked: false
+      max_participants: 5
     }
   end
 
@@ -23,8 +22,7 @@ RSpec.describe "Availabilities", type: :request do
       date: nil,
       start_time: nil,
       end_time: nil,
-      max_participants: nil,
-      is_booked: nil
+      max_participants: nil
     }
   end
 

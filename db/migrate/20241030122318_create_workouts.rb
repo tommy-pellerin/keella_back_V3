@@ -13,7 +13,7 @@ class CreateWorkouts < ActiveRecord::Migration[7.2]
       t.belongs_to :category, index: true
       t.boolean :is_indoor, default: true
       t.boolean :host_present, default: true
-      t.string :status, default: 0
+      t.integer :status, default: 0
 
       t.timestamps
     end
