@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe "Categories", type: :request do
   let(:user) { create(:user) }
   before do
+    user.confirm
     sign_in user
   end
 

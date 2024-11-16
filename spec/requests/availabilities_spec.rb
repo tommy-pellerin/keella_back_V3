@@ -2,6 +2,9 @@ require 'rails_helper'
 
 RSpec.describe "Availabilities", type: :request do
   let(:host) { create(:user) }
+  before do
+    host.confirm
+  end
   let(:workout) { create(:workout, host: host) }
   let(:availability) { create(:availability, workout: workout) }
 

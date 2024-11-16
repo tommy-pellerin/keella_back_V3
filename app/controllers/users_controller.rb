@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_user, only: %i[show update destroy]
+  before_action :authorize_user, only: %i[update destroy]
 
   # GET /users
   def index
@@ -9,48 +11,43 @@ class UsersController < ApplicationController
 
   # GET /users/:id
   def show
-    user = get_user_from_token
-    render json: {
-      message: "User profile",
-      user: user
-    }
+    render json: @user
   end
 
   # PATCH/PUT /users/:id
-  # def update
-  #   user_params = params.require(:user).permit(:name, :other_field) # autres champs autorisés
-
-  #   # Tente la mise à jour des informations
-  #   if current_user.update(user_params)
-  #     render json: { message: 'Informations utilisateur mises à jour avec succès' }, status: :ok
-  #   else
-  #     render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
-  #   end
-  # end
+  def update
+    if current_user.update(user_params)
+      render json: { user: current_user }, status: :ok
+    else
+      render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
 
   # DELETE /users/:id
   def destroy
-    user = get_user_from_token
-    if user == current_user
-      if user.destroy
-        render json: { message: "User deleted successfully." }, status: :ok
-      else
-        render json: { error: "Failed to delete user." }, status: :unprocessable_entity
-      end
+    if user.destroy
+      render json: { message: "User deleted successfully." }, status: :ok
     else
-      render json: { error: "Vous n'êtes pas autorisé à effectuer cette action" }, status: :unauthorized
+      render json: { error: "Failed to delete user." }, status: :unprocessable_entity
     end
   end
 
   private
 
-  def get_user_from_token
-    token = request.headers["Authorization"].split(" ")[1]
-    jwt_payload = JWT.decode(token, Rails.application.credentials.devise[:jwt_secret_key]).first
-    user_id = jwt_payload["sub"]
-    User.find(user_id.to_s)
-  rescue JWT::DecodeError => e
-    render json: { error: "Invalid token: #{e.message}" }, status: :unauthorized
-    nil
+  def set_user
+    @user = User.find(params[:id])
+  end
+
+  def authorize_user
+    # Si l'utilisateur actuel est un admin, on le laisse mettre à jour n'importe quel utilisateur
+    # Sinon, on vérifie qu'il essaie de mettre à jour son propre profil
+    @user = User.find(params[:id])
+    if @user != current_user && !current_user.is_admin?
+      render json: { error: "Vous n'êtes pas autorisé à effectuer cette action" }, status: :unauthorized
+    end
+  end
+
+  def user_params
+    params.require(:user).permit(:first_name, :last_name, :birthday, :phone_number, :id_verified, :professional, :is_admin, :city_id)
   end
 end

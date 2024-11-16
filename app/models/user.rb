@@ -21,8 +21,8 @@ class User < ApplicationRecord
   # french phone number start with +33, 0033 or 0, following by 9 numbers that can be separate by space, dot or dash
   validates :phone, presence: true,
   format: {
-    with: /\A(?:(?:\+|00)33[\s.-]?|0)[1-9](?:[\s.-]?\d{2}){4}|\A0[1-9]\d{8}\z/,
-    message: "please enter a valid French number (e.g., 06 01 02 03 04, 0601020304, +33 6 01 02 03 04, 00336 01 02 03 04)"
+    with: /\A(?:(?:\+|00)33[\s.-][1-9](?:[\s.-]?\d{2}){4}|0[1-9](?:[\s.-]?\d{2}){4}|0[1-9]\d{8})\z/,
+    message: "please enter a valid French number (e.g., 06 01 02 03 04, +33 6 01 02 03 04, 0033 6 01 02 03 04)"
   }
 
   validates :city_id, presence: true
@@ -38,11 +38,12 @@ class User < ApplicationRecord
   # Validation de l'âge minimum (exemple 18 ans)
   validate :minimum_age
 
+
   private
 
   # Validation personnalisée pour l'âge minimum de l'utilisateur (par exemple, 18 ans)
   def minimum_age
-    if birthday.present? && birthday > 18.years.ago
+    if birthday.present? && birthday >= 18.years.ago
       errors.add(:birthday, "You must be at least 18 years old")
     end
   end

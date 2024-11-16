@@ -2,6 +2,9 @@ require 'rails_helper'
 
 RSpec.describe "Workouts", type: :request do
   let(:host) { create(:user) }
+  before do
+    host.confirm
+  end
   let(:category) { create(:category) }
   let(:city) { create(:city) }
 
@@ -79,11 +82,9 @@ RSpec.describe "Workouts", type: :request do
     end
 
     context "with valid parameters when authenticated" do
-      before do
-        sign_in host
-      end
-
       it "creates a new Workout" do
+        sign_in host
+
         expect {
           post "/workouts", params: { workout: valid_attributes }
         }.to change(Workout, :count).by(1)

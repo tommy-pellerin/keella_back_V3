@@ -1,6 +1,8 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json
+  # Cette méthode est utilisée pour autoriser les nouveaux paramètres
+  before_action :configure_sign_up_params, only: [ :create ]
   before_action :authenticate_user!, only: %i[update]
 
   # PATCH /users
@@ -37,7 +39,24 @@ class Users::RegistrationsController < Devise::RegistrationsController
     render json: { message: "Something went wrong." }, status: :unprocessable_entity
   end
 
+  def configure_sign_up_params
+    # Permet d'ajouter les nouveaux attributs dans les paramètres Devise
+    devise_parameter_sanitizer.permit(:sign_up, keys: [
+      :first_name,
+      :last_name,
+      :birthday,
+      :phone,
+      :id_verified,
+      :professional,
+      :is_admin,
+      :city_id
+    ])
+  end
+
   def user_params
-    params.require(:user).permit(:new_email, :current_password)
+    params.require(:user).permit(
+      :new_email,
+      :current_password
+    )
   end
 end

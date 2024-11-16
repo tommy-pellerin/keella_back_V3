@@ -1,10 +1,11 @@
 class CitiesController < ApplicationController
   before_action :set_city, only: %i[ show update destroy ]
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: %i[ index ]
   # before_action :authorize_admin!
 
   # GET /cities
   def index
+    Rails.logger.debug "Current user: #{current_user.inspect}" # Vérifie si un utilisateur est connecté
     @cities = City.all
 
     render json: @cities

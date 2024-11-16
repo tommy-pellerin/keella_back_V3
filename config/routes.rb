@@ -4,10 +4,10 @@ Rails.application.routes.draw do
     registrations: "users/registrations",
     passwords: "users/passwords"
   }
-  devise_scope :user do
-    delete "sign_out", to: "users/sessions#destroy"
-  end
-  resources :users, only: [ :show, :index, :destroy ]
+  # devise_scope :user do
+  #   delete "sign_out", to: "users/sessions#destroy"
+  # end
+  resources :users, only: [ :index, :show, :update, :destroy ]
   resources :reservations
   resources :categories
   resources :availabilities
