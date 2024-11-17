@@ -12,5 +12,10 @@ FactoryBot.define do
     is_admin { false }
     # Association avec la factory `City`
     city { association(:city) }
+
+    # Confirm the user immediately after creation
+    after(:create) do |user|
+      user.confirm # Appelle la méthode `confirm` de Devise
+    end
   end
 end
