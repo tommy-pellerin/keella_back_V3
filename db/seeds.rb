@@ -145,9 +145,10 @@ end
 # Création des utilisateurs
 def create_users
   created_count = 0
+  i = 1
   10.times do
     user = User.create(
-      email: Faker::Internet.email,        # Génère un email aléatoire
+      email: "user#{i}@yopmail.fr",        # Génère un email aléatoire
       password: 'azerty123',               # Mot de passe fixe
       first_name: Faker::Name.first_name,  # Génère un prénom aléatoire
       last_name: Faker::Name.last_name,    # Génère un nom de famille aléatoire
@@ -159,6 +160,7 @@ def create_users
       is_admin: false,                     # Assure-toi de ne pas créer d'admin pour ce seed
       status: 0                            # Par défaut, le statut est 0
     )
+    i += 1
     user.confirmed_at = Time.now
     user.save
 

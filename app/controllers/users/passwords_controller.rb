@@ -12,12 +12,11 @@ class Users::PasswordsController < Devise::PasswordsController
     end
   end
 
-  # Pour les utilisateurs connectés : soumettre un nouveau mot de passe
+  # Pour les utilisateurs non connectés : soumettre un nouveau mot de passe avec un token
   def update
-    puts "### update password ###"
+    # puts "### update password ###"
     self.resource = resource_class.reset_password_by_token(resource_params)
     if resource.errors.empty?
-      bypass_sign_in(current_user) # Reste connecté après le changement de mot de passe
       render json: { message: "Mot de passe mis à jour avec succes." }, status: :ok
     else
       render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
@@ -31,7 +30,7 @@ class Users::PasswordsController < Devise::PasswordsController
     params.require(:user).permit(:email)
   end
 
-  def update_params
-    params.require(:user).permit(:current_password, :password, :password_confirmation)
+  def resource_params
+    params.require(:user).permit(:reset_password_token, :password, :password_confirmation)
   end
 end
