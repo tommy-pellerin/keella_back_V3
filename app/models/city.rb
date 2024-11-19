@@ -1,6 +1,6 @@
 class City < ApplicationRecord
   # Relations
-  # has_many :users
+  has_many :users
   has_many :workouts
 
   # Validations

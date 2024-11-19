@@ -1,6 +1,7 @@
 class WorkoutsController < ApplicationController
-  before_action :set_workout, only: %i[ show update destroy ]
   before_action :authenticate_user!, except: %i[ index show ]
+  before_action :authorize_user!, only: %i[update destroy]
+  before_action :set_workout, only: %i[ show update destroy ]
 
   # GET /workouts
   def index
@@ -16,7 +17,7 @@ class WorkoutsController < ApplicationController
 
   # POST /workouts
   def create
-    @workout = Workout.new(workout_params)
+    @workout = Workout.new(workout_params.merge(host: current_user))
     if @workout.save
       render json: @workout, status: :created, location: @workout
     else
@@ -44,7 +45,11 @@ class WorkoutsController < ApplicationController
 
   private
 
-
+  def authorize_user!
+    unless @workout.host == current_user
+      render json: { error: "Vous n'êtes pas autorisé à faire cette action" }, status: :unauthorized
+    end
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_workout
@@ -62,7 +67,6 @@ class WorkoutsController < ApplicationController
       :zip_code,            # Le code postal
       :price_per_session,   # Le prix par session
       :max_participants,    # Le nombre maximal de participants
-      :host_id,             # L'id de l'hôte, qui est un utilisateur
       :category_id,         # L'id de la catégorie du workout
       :is_indoor,           # Boolean pour savoir si c'est en intérieur
       :host_present,        # Boolean pour savoir si l'hôte est présent

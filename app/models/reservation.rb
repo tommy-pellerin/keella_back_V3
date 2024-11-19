@@ -19,7 +19,7 @@ class Reservation < ApplicationRecord
   validates :status, presence: true
 
   # personalized method validations
-  # validate :check_availability
+  validate :check_availability, on: :create
   # validate :check_overlap
 
   private
@@ -38,9 +38,17 @@ class Reservation < ApplicationRecord
 
   # Vérifie si le nombre de places disponibles est suffisant pour la réservation
   def check_availability
-    available_places = workout.max_participants - workout.reservations.where(status: [ "pending", "accepted" ]).sum(:quantity)
-    errors.add(:quantity, "La séance de sport est complète") if available_places < 0
-    errors.add(:quantity, "Il n'y a pas assez de places disponibles") if quantity > available_places
+    if availability.present?  # Vérifie si availability est présent
+      # Vérifie si la quantité demandée est supérieure aux places restantes
+      if quantity.present? && quantity > availability.available_slots
+        errors.add(:quantity, "Le créneau est complet ou il n'y a pas assez de places disponibles.")
+      # Vérifie si le créneau est complet
+      elsif availability.full?
+        errors.add(:quantity, "Ce créneau est complet.")
+      end
+    else
+      errors.add(:availability, "La disponibilité est requise.")
+    end
   end
 
   def set_relaunched_at

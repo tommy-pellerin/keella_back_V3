@@ -6,8 +6,7 @@ class CreateAvailabilities < ActiveRecord::Migration[7.2]
       t.time :start_time, null: false
       t.time :end_time, null: false
       t.integer :max_participants
-      t.boolean :is_booked, default: false
-
+      t.integer :slot
       t.timestamps
     end
   end

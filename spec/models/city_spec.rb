@@ -11,4 +11,9 @@ RSpec.describe City, type: :model do
     it { should allow_value('75001').for(:zip_code) } # Validation du format du code postal
     it { should_not allow_value('abcde').for(:zip_code) }  # Test d'un code postal invalide
   end
+
+  describe 'associations' do
+    it { should have_many(:users) }
+    it { should have_many(:workouts) }
+  end
 end

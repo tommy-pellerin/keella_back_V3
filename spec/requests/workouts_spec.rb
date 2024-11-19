@@ -2,6 +2,9 @@ require 'rails_helper'
 
 RSpec.describe "Workouts", type: :request do
   let(:host) { create(:user) }
+  before do
+    host.confirm
+  end
   let(:category) { create(:category) }
   let(:city) { create(:city) }
 
@@ -29,7 +32,6 @@ RSpec.describe "Workouts", type: :request do
       description: "Séance sans titre",
       address: "Paris",
       city: "Paris",
-      zip_code: "75000",
       price_per_session: 10.0,
       max_participants: 10,
       host_id: 1,
@@ -69,11 +71,20 @@ RSpec.describe "Workouts", type: :request do
   end
 
   describe "POST /workouts" do
-    before do
-      sign_in host
+    context "with valid parameters when not authenticated" do
+      it "does not allow creating a new Workout" do
+        expect {
+          post "/workouts", params: { workout: valid_attributes }
+        }.not_to change(Workout, :count)
+
+        expect(response).to have_http_status(:unauthorized)
+      end
     end
-    context "with valid parameters" do
+
+    context "with valid parameters when authenticated" do
       it "creates a new Workout" do
+        sign_in host
+
         expect {
           post "/workouts", params: { workout: valid_attributes }
         }.to change(Workout, :count).by(1)
@@ -82,74 +93,94 @@ RSpec.describe "Workouts", type: :request do
       end
     end
 
-    # context "with invalid parameters" do
-    #   it "does not create a new Workout" do
-    #     expect {
-    #       post "/workouts", params: { workout: invalid_attributes }
-    #     }.to change(Workout, :count).by(0)
+    context "with invalid parameters when authenticated" do
+      before do
+        sign_in host
+      end
 
-    #     expect(response).to have_http_status(:unprocessable_entity)
-    #   end
-    # end
+      let(:invalid_attributes) { valid_attributes.merge(title: nil) }
+
+      it "does not create a new Workout" do
+        expect {
+          post "/workouts", params: { workout: invalid_attributes }
+        }.not_to change(Workout, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
   end
 
   describe "PATCH /workouts/:id" do
-    let!(:workout) { create(:workout) }
+    let!(:workout) { create(:workout, valid_attributes) }
+    updated_title = "Séance avancée de Yoga"
     let(:new_attributes) do
-      { title: "Séance avancée de Yoga" }
+      { title: updated_title }
     end
 
-    before do
-      sign_in host
+    context "when user is host," do
+      before do
+        sign_in host
+      end
+
+      it "updates a workout" do
+        patch "/workouts/#{workout.id}", params: { workout: new_attributes }
+
+        workout.reload
+        expect(workout.title).to eq(updated_title)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "returns a 404 if the workout does not exist" do
+        patch "/workouts/99999", params: { workout: new_attributes }
+
+        expect(response).to have_http_status(:not_found)
+      end
     end
 
-    it "updates a workout" do
-      patch "/workouts/#{workout.id}", params: { workout: new_attributes }
+    context "when user is not host," do
+      let(:another_user) { create(:user) }
+      it 'does not allow update by non-host' do
+        sign_in another_user  # L'utilisateur actuel n'est pas l'hôte
 
-      workout.reload
-      expect(workout.title).to eq("Séance avancée de Yoga")
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "returns a 404 if the workout does not exist" do
-      patch "/workouts/99999", params: { workout: new_attributes }
-
-      expect(response).to have_http_status(:not_found)
+        patch "/workouts/#{workout.id}", params: { workout: new_attributes }
+        workout.reload
+        expect(response).to have_http_status(:unauthorized)
+      end
     end
   end
 
   describe "DELETE /workouts/:id" do
-    # before do
-    #   create_list(:workout, 5) # Crée 5 workouts avec la factory
-    # end
-    before do
-      sign_in host
+    let!(:workout) { create(:workout, valid_attributes) }
+
+    context "when user is host," do
+      before do
+        sign_in host
+      end
+
+      it "delete a workout" do
+        expect {
+          delete "/workouts/#{workout.id}"
+        }.to change(Workout, :count).by(-1)
+
+        expect(response.status).to eq(200)
+      end
+
+      it "returns a 404 if the workout does not exist" do
+        delete "/workouts/99999"
+
+        expect(response).to have_http_status(:not_found)
+      end
     end
 
-    let!(:workout) { create(:workout) }
-    it "deletes a workout" do
-      expect {
-        delete "/workouts/#{workout.id}"
-      }.to change(Workout, :count).by(-1)
+    context "when user is not host," do
+      let(:another_user) { create(:user) }
+      it 'does not allow deletion by non-host' do
+        sign_in another_user  # L'utilisateur actuel n'est pas l'hôte
 
-      expect(response.status).to eq(200)
+        expect {
+          delete "/workouts/#{workout.id}"
+        }.not_to change(Workout, :count)
+      end
     end
-
-    it "returns a 404 if the workout does not exist" do
-      delete "/workouts/99999"
-
-      expect(response).to have_http_status(:not_found)
-    end
-
-    # it 'does not allow deletion by non-host' do
-    #   another_user = create(:user)
-    #   workout.update(host: another_user)
-
-    #   sign_in another_user  # L'utilisateur actuel n'est pas l'hôte
-
-    #   expect {
-    #     delete "/workouts/#{workout.id}"
-    #   }.not_to change(Workout, :count)
-    # end
   end
 end

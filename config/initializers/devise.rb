@@ -319,5 +319,9 @@ Devise.setup do |config|
 
     # Définir le temps d'expiration en secondes (par exemple, 2 heures)
     jwt.expiration_time = 1.hours.to_i
+
+    # Définir les stratégies de révocation (nécessaire pour les déconnexions sécurisées)
+    # jwt.dispatch_requests = [['POST', %r{^/users/sign_in$}]]
+    # jwt.revocation_requests = [ [ "DELETE", %r{^/users/sign_out$} ] ]
   end
 end

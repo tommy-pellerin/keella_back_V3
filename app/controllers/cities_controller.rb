@@ -1,8 +1,11 @@
 class CitiesController < ApplicationController
+  before_action :authenticate_user!, except: %i[ index ]
   before_action :set_city, only: %i[ show update destroy ]
-  before_action :authenticate_user!
+  before_action :authorize_admin!, %i[ show create update destroy ]
+
   # GET /cities
   def index
+    Rails.logger.debug "Current user: #{current_user.inspect}" # Vérifie si un utilisateur est connecté
     @cities = City.all
 
     render json: @cities
@@ -46,16 +49,21 @@ class CitiesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_city
-      @city = City.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def city_params
-      params.require(:city).permit(
-        :name,
-        :zip_code
-      )
-    end
+  def authorize_admin!
+    render json: { error: "Vous n'êtes pas administrateur, vous ne pouvez acceder à cette page." }, status: :unauthorized unless current_user.is_admin?
+  end
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_city
+    @city = City.find(params.expect(:id))
+  end
+
+  # Only allow a list of trusted parameters through.
+  def city_params
+    params.require(:city).permit(
+      :name,
+      :zip_code
+    )
+  end
 end

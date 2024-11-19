@@ -27,8 +27,9 @@ RSpec.describe Reservation, type: :model do
   describe 'callbacks' do
     context 'before_create' do
       it 'sets the total price based on workout price and quantity' do
+        participant = create(:participant)
         workout = create(:workout, price_per_session: 100)
-        reservation = build(:reservation, workout: workout, quantity: 3)
+        reservation = build(:reservation, participant: participant, workout: workout, quantity: 3)
 
         reservation.save
         expect(reservation.total).to eq(300)

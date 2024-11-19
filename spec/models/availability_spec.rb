@@ -11,14 +11,6 @@ RSpec.describe Availability, type: :model do
     it { should validate_presence_of(:end_time) }
     it { should validate_presence_of(:max_participants) }  # Le nombre max de participants doit être présent
     it { should validate_numericality_of(:max_participants).is_greater_than(0) }  # Le nombre max de participants doit être > 0
-    # it { should validate_presence_of(:duration) }
-
-    # Durée minimale de 30 minutes
-    # it { should validate_numericality_of(:duration).is_greater_than(30) }
-
-    # Boolean pour is_booked
-    it { should allow_value(true).for(:is_booked) }
-    it { should allow_value(false).for(:is_booked) }
   end
 
   # Associations

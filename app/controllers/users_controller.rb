@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_and_authorize_user, only: [ :update, :destroy ]
 
   # GET /users
   def index
@@ -9,48 +10,67 @@ class UsersController < ApplicationController
 
   # GET /users/:id
   def show
-    user = get_user_from_token
-    render json: {
-      message: "User profile",
-      user: user
-    }
+    puts "##### current user is : #{current_user.id}"
+    user = User.find(params[:id])
+
+    # Si l'utilisateur est un admin ou le profil du current_user, on montre toutes les informations
+    if current_user == user || current_user.is_admin?
+      render json: user
+    else
+      public_user_info = user.slice(:first_name, :last_name, :city_id, :professional)
+      render json: public_user_info
+    end
   end
 
   # PATCH/PUT /users/:id
-  # def update
-  #   user_params = params.require(:user).permit(:name, :other_field) # autres champs autorisés
-
-  #   # Tente la mise à jour des informations
-  #   if current_user.update(user_params)
-  #     render json: { message: 'Informations utilisateur mises à jour avec succès' }, status: :ok
-  #   else
-  #     render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
-  #   end
-  # end
+  def update
+    if @user.update(user_params)
+      render json: { user: @user }, status: :ok
+    else
+      render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
 
   # DELETE /users/:id
   def destroy
-    user = get_user_from_token
-    if user == current_user
-      if user.destroy
-        render json: { message: "User deleted successfully." }, status: :ok
-      else
-        render json: { error: "Failed to delete user." }, status: :unprocessable_entity
-      end
+    if @user.destroy
+      render json: { message: "User deleted successfully." }, status: :ok
     else
-      render json: { error: "Vous n'êtes pas autorisé à effectuer cette action" }, status: :unauthorized
+      render json: { error: "Failed to delete user." }, status: :unprocessable_entity
     end
   end
 
   private
 
-  def get_user_from_token
-    token = request.headers["Authorization"].split(" ")[1]
-    jwt_payload = JWT.decode(token, Rails.application.credentials.devise[:jwt_secret_key]).first
-    user_id = jwt_payload["sub"]
-    User.find(user_id.to_s)
-  rescue JWT::DecodeError => e
-    render json: { error: "Invalid token: #{e.message}" }, status: :unauthorized
-    nil
+  def set_and_authorize_user
+    # puts "current_user: #{current_user.id}"
+    # puts "Attempting to access user: #{params[:id]}"
+    # Si l'utilisateur est admin, il peut accéder à n'importe quel utilisateur
+    # Sinon, on restreint l'accès à son propre profil
+    @user = User.find(params[:id])
+    # puts "Authorized user: #{@user.id}"
+    # puts @user.inspect
+    # Si l'utilisateur actuel n'est pas admin et tente de modifier un autre utilisateur
+    # ou s'il n'est pas autorisé à effectuer l'action, renvoyer une erreur 401
+    if @user != current_user && !current_user.is_admin?
+      render json: { error: "Vous n'êtes pas autorisé à effectuer cette action" }, status: :unauthorized
+    end
+
+    # On peut aussi bloquer explicitement la tentative de modifier certains champs sensibles (comme is_admin)
+    # au cas où l'utilisateur essaie de forcer une modification via les paramètres.
+    if params[:user]&.key?(:is_admin) && !current_user.is_admin?
+      render json: { error: "Modification du statut admin non autorisée" }, status: :unauthorized
+    end
+  end
+
+  def user_params
+    # Liste des paramètres autorisés de base
+    permitted_params = [ :first_name, :last_name, :birthday, :phone, :city_id, :professional ]
+
+    # Si l'utilisateur est admin, on ajoute des champs sensibles comme is_admin et id_verified
+    permitted_params << [ :is_admin, :id_verified ] if current_user.is_admin?
+
+    # Permet uniquement les paramètres autorisés
+    params.require(:user).permit(*permitted_params)
   end
 end

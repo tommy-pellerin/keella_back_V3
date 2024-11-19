@@ -13,11 +13,9 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/cities", type: :request do
-  # This should return the minimal set of attributes required to create a valid
-  # City. As you add validations to City, be sure to
-  # adjust the attributes here as well.
   let(:user) { create(:user) }
   before do
+    user.confirm
     sign_in user
   end
 
@@ -44,7 +42,7 @@ RSpec.describe "/cities", type: :request do
       get "/cities"
 
       expect(response).to have_http_status(:ok)
-      expect(json_response.size).to eq(5)
+      expect(json_response.size).to eq(6)
     end
   end
 
