@@ -5,7 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_sign_up_params, only: [ :create ]
   before_action :authenticate_user!, only: [ :update ]
 
-  # PATCH /users
+  # PATCH /users pour changer email et/ou mot de passe lorsque user est connecté
   def update
     # Vérifier si l'email est le même
     if params[:user][:email].present? && current_user.email == params[:user][:email]
@@ -34,7 +34,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def register_success
     render json: {
-      message: "Inscription avec succes.",
+      message: "Inscription avec succes. Un email de confirmation a été envoyé.",
       user: current_user
     }, status: :ok
   end

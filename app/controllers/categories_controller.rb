@@ -1,7 +1,7 @@
 class CategoriesController < ApplicationController
+  before_action :authenticate_user!, except: %i[ index ]
   before_action :set_category, only: %i[ show update destroy ]
-  before_action :authenticate_user!
-  # before_action :authorize_admin!
+  before_action :authorize_admin!, %i[ show create update destroy ]
 
   # GET /categories
   def index
@@ -47,7 +47,7 @@ class CategoriesController < ApplicationController
   private
 
   def authorize_admin!
-    render json: { error: "Vous n'êtes pas administrateur, vous ne pouvez acceder à cette page." }, status: :unauthorized unless current_user.isAdmin?
+    render json: { error: "Vous n'êtes pas administrateur, vous ne pouvez acceder à cette page." }, status: :unauthorized unless current_user.is_admin?
   end
 
   # Use callbacks to share common setup or constraints between actions.

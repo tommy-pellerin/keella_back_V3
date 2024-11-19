@@ -10,6 +10,7 @@ class UsersController < ApplicationController
 
   # GET /users/:id
   def show
+    puts "##### current user is : #{current_user.id}"
     user = User.find(params[:id])
 
     # Si l'utilisateur est un admin ou le profil du current_user, on montre toutes les informations
