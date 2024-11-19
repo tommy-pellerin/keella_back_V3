@@ -14,10 +14,7 @@ require 'rails_helper'
 
 RSpec.describe "/cities", type: :request do
   let(:user) { create(:user) }
-  before do
-    user.confirm
-    sign_in user
-  end
+  let(:admin) { create(:user, is_admin: true) }
 
   let(:valid_attributes) do
     {
@@ -35,37 +32,54 @@ RSpec.describe "/cities", type: :request do
 
   describe "GET /cities" do
     before do
+      sign_in admin
       create_list(:city, 5)
     end
+    context "as an admin" do
+      it "returns a list of cities" do
+        get "/cities"
 
-    it "returns a list of cities" do
-      get "/cities"
+        expect(response).to have_http_status(:ok)
+        expect(json_response.size).to eq(6)
+      end
+    end
+    context "as a user not admin" do
+      before { sign_in user }
+      it "returns a list of cities" do
+        get "/cities"
 
-      expect(response).to have_http_status(:ok)
-      expect(json_response.size).to eq(6)
+        expect(response).to have_http_status(:ok)
+        expect(json_response.size).to eq(7)
+      end
     end
   end
 
   describe "GET /cities/:id" do
-    let(:city) { create(:city) }
+    context "as an admin" do
+      before { sign_in admin }
+      let(:city) { create(:city) }
 
-    it "returns a specific city" do
-      get "/cities/#{city.id}"
+      it "returns a specific city" do
+        get "/cities/#{city.id}"
 
-      expect(response).to have_http_status(:ok)
-      expect(json_response['id']).to eq(city.id)
-      expect(json_response['name']).to eq(city.name)
-    end
+        expect(response).to have_http_status(:ok)
+        expect(json_response['id']).to eq(city.id)
+        expect(json_response['name']).to eq(city.name)
+      end
 
-    it "returns a 404 error when the city is not found" do
-      get "/cities/99999"  # ID qui n'existe pas
+      it "returns a 404 error when the city is not found" do
+        get "/cities/99999"  # ID qui n'existe pas
 
-      expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 
   describe "POST /create" do
-    context "with valid parameters" do
+    before do
+      sign_in admin
+    end
+    context "as admin with valid parameters" do
       it "creates a new City" do
         expect {
           post "/cities", params: { city: valid_attributes }
@@ -89,8 +103,10 @@ RSpec.describe "/cities", type: :request do
   describe "PATCH /cities/:id" do
     let(:city) { create(:city, name: "Paris", zip_code: 75000) }
     let(:new_attributes) { { name: "Toulouse" } }
-
-    context "with valid parameters" do
+    before do
+      sign_in admin
+    end
+    context "as admin with valid parameters" do
       it "updates the requested city" do
         patch "/cities/#{city.id}", params: { city: new_attributes }
 
@@ -111,8 +127,10 @@ RSpec.describe "/cities", type: :request do
 
   describe "DELETE /cities/:id" do
     let!(:city) { create(:city) }  # Utilise `!` pour la création immédiate
-
-    it "deletes the city" do
+    before do
+      sign_in admin
+    end
+    it "as admin deletes the city" do
       expect {
         delete "/cities/#{city.id}"
       }.to change(City, :count).by(-1)

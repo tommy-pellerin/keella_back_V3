@@ -1,7 +1,7 @@
 class WorkoutsController < ApplicationController
   before_action :authenticate_user!, except: %i[ index show ]
-  before_action :authorize_user!, only: %i[update destroy]
   before_action :set_workout, only: %i[ show update destroy ]
+  before_action :authorize_user!, only: %i[update destroy]
 
   # GET /workouts
   def index
