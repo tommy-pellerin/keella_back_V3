@@ -1,7 +1,7 @@
 class AvailabilitiesController < ApplicationController
   before_action :authenticate_user!, except: %i[ index ]
-  before_action :authorize_user!, only: %i[ update destroy ]
   before_action :set_availability, only: %i[ show update destroy ]
+  before_action :authorize_user!, only: %i[ update destroy ]
 
   # GET /availabilities
   def index

@@ -1,7 +1,7 @@
 class CategoriesController < ApplicationController
   before_action :authenticate_user!, except: %i[ index ]
   before_action :set_category, only: %i[ show update destroy ]
-  before_action :authorize_admin!, %i[ show create update destroy ]
+  before_action :authorize_admin!, only: %i[ show create update destroy ]
 
   # GET /categories
   def index

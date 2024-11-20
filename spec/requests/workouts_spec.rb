@@ -2,9 +2,6 @@ require 'rails_helper'
 
 RSpec.describe "Workouts", type: :request do
   let(:host) { create(:user) }
-  before do
-    host.confirm
-  end
   let(:category) { create(:category) }
   let(:city) { create(:city) }
 

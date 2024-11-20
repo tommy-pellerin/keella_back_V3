@@ -49,12 +49,17 @@ group :development, :test do
   gem "shoulda-matchers", "~> 6.4"
 end
 
+# Loads environment variables from '.env'
 gem "dotenv"
+# Authentication
 gem "devise"
+# Authentication with token
 gem "devise-jwt"
+# Translation for devise gem
 gem "devise-i18n"
-
+# Generate fake data for simulation
 gem "faker"
+# Show data into nice tables in console
 gem "table_print"
-
+# Intercept email and display it in the browser instead of sending
 gem "letter_opener"

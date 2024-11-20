@@ -2,9 +2,6 @@ require 'rails_helper'
 
 RSpec.describe "Availabilities", type: :request do
   let(:host) { create(:user) }
-  before do
-    host.confirm
-  end
   let(:workout) { create(:workout, host: host) }
   let(:availability) { create(:availability, workout: workout) }
 
@@ -31,6 +28,7 @@ RSpec.describe "Availabilities", type: :request do
 
   describe "GET /availabilities" do
     before do
+      sign_in host
       create_list(:availability, 5) # Crée 5 availabilities avec la factory
     end
 
@@ -43,6 +41,9 @@ RSpec.describe "Availabilities", type: :request do
   end
 
   describe "GET /availabilities/:id" do
+    before do
+      sign_in host
+    end
     it "returns the availability" do
       get "/availabilities/#{availability.id}"
 

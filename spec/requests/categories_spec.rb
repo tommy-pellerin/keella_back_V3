@@ -1,9 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "Categories", type: :request do
-  let(:user) { create(:user) }
+  let(:user) { create(:user, is_admin: true) }
   before do
-    user.confirm
     sign_in user
   end
 
