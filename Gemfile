@@ -63,3 +63,5 @@ gem "faker"
 gem "table_print"
 # Intercept email and display it in the browser instead of sending
 gem "letter_opener"
+# Admin system : provides a set of helpers which guide you in leveraging regular Ruby classes and object oriented design patterns to build a straightforward, robust, and scalable authorization system
+gem "pundit", "~> 2.4"
