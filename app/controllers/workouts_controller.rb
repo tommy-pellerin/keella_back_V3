@@ -2,17 +2,52 @@ class WorkoutsController < ApplicationController
   before_action :authenticate_user!, except: %i[ index show ]
   before_action :set_workout, only: %i[ show update destroy ]
   before_action :authorize_user!, only: %i[update destroy]
+  include Paginatable
+  include Sortable
+  include Filterable
 
   # GET /workouts
   def index
     @workouts = Workout.all
 
-    render json: @workouts
+    # Applique les filtres
+    @workouts = filter(@workouts)
+
+    # Applique le tri
+    @workouts = sort(@workouts)
+
+    # Applique la pagination
+    paginated_workouts = paginate(@workouts)
+
+    render json: {
+      current_page: paginated_workouts[:current_page],
+      per_page: paginated_workouts[:per_page],
+      total_count: paginated_workouts[:total_count],
+      total_pages: paginated_workouts[:total_pages],
+      workouts: paginated_workouts[:records].as_json(
+        only: [ :title, :price_per_session ],
+        include: {
+          city: { only: [ :name ] }
+          # category: { only: [ :title ] }
+          # availabilities: { methods: [ :available_slots ], only: [ :available_slots ] }
+        }
+      )
+    }
   end
 
   # GET /workouts/1
   def show
-    render json: @workout
+    render json: @workout.as_json(
+      include: {
+        host: { only: [ :first_name, :id ] },
+        city: { only: [ :name, :id ] },
+        category: { only: [ :title, :id ] },
+        availabilities: {
+          only: [ :id, :date, :start_time, :end_time, :max_participants, :slot ],
+          methods: [ :available_slots ]
+        }
+      }
+    )
   end
 
   # POST /workouts
