@@ -17,3 +17,5 @@ En somme, votre application offre une solution pratique et économique pour les 
 - translate DEVISE
 - Implémentation d'un "soft delete" = quand un utilisateur est supprimé avec destroy, l'objet est simplement marqué comme supprimé (en définissant la valeur de deleted_at), mais les données restent dans la base.
 - users can suggest new category
+- reviews city relations
+- reviews availabilities : il generate a of work to the server when request a workout availiabilities 
