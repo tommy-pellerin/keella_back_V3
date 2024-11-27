@@ -199,7 +199,7 @@ def generate_workout
 
   # Création du workout et gestion des erreurs
   workout = Workout.create(
-    title: "Séance de #{category.title} à #{city}",
+    title: "Séance de #{category.title} à #{city.name}",
     description: Faker::Lorem.paragraph,
     equipments: equipments,
     address: address,
