@@ -1,5 +1,6 @@
 class Workout < ApplicationRecord
   # Relations
+  has_many_attached :workout_images, dependent: :destroy
   belongs_to :city
   belongs_to :category
   belongs_to :host, class_name: "User"
@@ -50,7 +51,26 @@ class Workout < ApplicationRecord
   # Callback pour empêcher la suppression si des réservations sont présentes
   before_destroy :check_for_reservations
 
+  # Validation pour limiter le nombre d'images à 3
+  validate :validate_workout_images
+
   private
+
+  def validate_workout_images
+    if workout_images.count > 3
+      errors.add(:workout_images, "You can attach a maximum of 3 images only.")
+    end
+
+    workout_images.each do |image|
+      if !image.content_type.in?(%w[image/jpeg image/png image/jpg])
+        errors.add(:workout_images, "must be a JPEG or PNG")
+      end
+
+      if image.byte_size > 5.megabytes
+        errors.add(:workout_images, "is too big. Each image should be less than 5MB")
+      end
+    end
+  end
 
   def check_for_reservations
     if reservations.any?

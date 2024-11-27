@@ -45,7 +45,8 @@ class WorkoutsController < ApplicationController
         availabilities: {
           only: [ :id, :date, :start_time, :end_time, :max_participants, :slot ],
           methods: [ :available_slots ]
-        }
+        },
+        workout_images: { methods: :url }
       }
     )
   end
@@ -54,6 +55,7 @@ class WorkoutsController < ApplicationController
   def create
     @workout = Workout.new(workout_params.merge(host: current_user))
     if @workout.save
+      attach_images if params[:workout][:workout_images].present?
       render json: @workout, status: :created, location: @workout
     else
       render json: @workout.errors, status: :unprocessable_entity
@@ -63,6 +65,7 @@ class WorkoutsController < ApplicationController
   # PATCH/PUT /workouts/1
   def update
     if @workout.update(workout_params)
+      attach_images if params[:workout][:workout_images].present?
       render json: @workout
     else
       render json: @workout.errors, status: :unprocessable_entity
@@ -107,5 +110,11 @@ class WorkoutsController < ApplicationController
       :host_present,        # Boolean pour savoir si l'hôte est présent
       :status               # Le statut du workout (par exemple "actif", "inactif")
     )
+  end
+
+  def attach_images
+    params[:workout][:workout_images].each do |image|
+      @workout.workout_images.attach(image)
+    end
   end
 end

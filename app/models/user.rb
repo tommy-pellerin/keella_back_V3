@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_one_attached :avatar, dependent: :destroy
   belongs_to :city
   # Quand il est host
   has_many :hosted_workouts, foreign_key: "host_id", class_name: "Workout"
@@ -38,8 +39,28 @@ class User < ApplicationRecord
   # Validation de l'âge minimum (exemple 18 ans)
   validate :minimum_age
 
+  # Control file type and size
+  validate :avatar_type_and_size
+
+  def avatar_url
+    Rails.application.routes.url_helpers.url_for(avatar) if avatar.attached?
+  end
 
   private
+
+  def avatar_type_and_size
+    if avatar.attached?
+      acceptable_types = [ "image/png", "image/jpeg", "image/jpg" ]
+      unless acceptable_types.include?(avatar.content_type)
+        errors.add(:avatar, "must be a PNG or JPEG")
+      end
+
+      max_size_in_megabytes = 5
+      if avatar.byte_size > max_size_in_megabytes.megabytes
+        errors.add(:avatar, "is too big. Maximum size allowed is #{max_size_in_megabytes} MB.")
+      end
+    end
+  end
 
   # Validation personnalisée pour l'âge minimum de l'utilisateur (par exemple, 18 ans)
   def minimum_age

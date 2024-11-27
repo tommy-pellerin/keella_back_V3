@@ -15,7 +15,7 @@ class UsersController < ApplicationController
 
     # Si l'utilisateur est un admin ou le profil du current_user, on montre toutes les informations
     if current_user == user || current_user.is_admin?
-      render json: user
+      render json: user.as_json(methods: [ :avatar_url ])
     else
       public_user_info = user.slice(:first_name, :last_name, :city_id, :professional)
       render json: public_user_info
@@ -25,7 +25,7 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/:id
   def update
     if @user.update(user_params)
-      render json: { user: @user }, status: :ok
+      render json: { user: @user.as_json(methods: [ :avatar_url ]) }, status: :ok
     else
       render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
     end
@@ -65,7 +65,7 @@ class UsersController < ApplicationController
 
   def user_params
     # Liste des paramètres autorisés de base
-    permitted_params = [ :first_name, :last_name, :birthday, :phone, :city_id, :professional ]
+    permitted_params = [ :first_name, :last_name, :birthday, :phone, :city_id, :professional, :avatar ]
 
     # Si l'utilisateur est admin, on ajoute des champs sensibles comme is_admin et id_verified
     permitted_params << [ :is_admin, :id_verified ] if current_user.is_admin?
