@@ -42,9 +42,9 @@ class User < ApplicationRecord
   # Control file type and size
   validate :avatar_type_and_size
 
-  def avatar_url
-    Rails.application.routes.url_helpers.url_for(avatar) if avatar.attached?
-  end
+  # def avatar_url
+  #   Rails.application.routes.url_helpers.url_for(avatar) if avatar.attached?
+  # end
 
   private
 
@@ -55,9 +55,9 @@ class User < ApplicationRecord
         errors.add(:avatar, "must be a PNG or JPEG")
       end
 
-      max_size_in_megabytes = 5
-      if avatar.byte_size > max_size_in_megabytes.megabytes
-        errors.add(:avatar, "is too big. Maximum size allowed is #{max_size_in_megabytes} MB.")
+      max_size_in_kilobytes = 100
+      if avatar.byte_size > max_size_in_kilobytes.kilobytes
+        errors.add(:avatar, "is too big. Maximum size allowed is #{max_size_in_kilobytes} KB.")
       end
     end
   end

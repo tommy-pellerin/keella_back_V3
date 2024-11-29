@@ -15,7 +15,9 @@ class UsersController < ApplicationController
 
     # Si l'utilisateur est un admin ou le profil du current_user, on montre toutes les informations
     if current_user == user || current_user.is_admin?
-      render json: user.as_json(methods: [ :avatar_url ])
+      user_info = user.as_json
+      user_info[:avatar_url] = user.avatar.attached? ? url_for(user.avatar) : nil
+      render json: user_info
     else
       public_user_info = user.slice(:first_name, :last_name, :city_id, :professional)
       render json: public_user_info
@@ -25,7 +27,9 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/:id
   def update
     if @user.update(user_params)
-      render json: { user: @user.as_json(methods: [ :avatar_url ]) }, status: :ok
+      user_info = @user.as_json
+      user_info[:avatar_url] = @user.avatar.attached? ? url_for(@user.avatar) : nil
+      render json: user_info, status: :ok
     else
       render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
     end
